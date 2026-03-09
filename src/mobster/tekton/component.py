@@ -22,10 +22,8 @@ from mobster.tekton.artifact import (
 from mobster.tekton.common import (
     CommonArgs,
     add_common_args,
-    connect_with_s3,
     get_atlas_upload_config,
     upload_sboms,
-    upload_snapshot,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -182,7 +180,7 @@ def parse_args(cli_args: Sequence[str] | None = None) -> ProcessComponentArgs:
         labels=args.labels,
         atlas_retries=args.atlas_retries,
         skip_upload=args.skip_upload,
-        skip_s3_upload=False,
+        skip_s3_upload=True,
         cosign_sign_config=sign_config,
         cosign_verify_config=verify_config,
     )
@@ -252,18 +250,12 @@ async def process_component_sboms(args: ProcessComponentArgs) -> None:
     Args:
         args: Arguments containing data directory and configuration.
     """
-    s3 = connect_with_s3(args.retry_s3_bucket)
 
-    if (not args.skip_s3_upload) and (not args.skip_upload) and s3:
-        LOGGER.info("Uploading snapshot to S3 with release_id=%s", args.release_id)
-        await upload_snapshot(s3, args.snapshot_spec, args.release_id)
-    else:
-        LOGGER.debug(
-            "skip_upload=%s, so no snapshot / "
-            "release data upload to S3, for release_id=%s",
-            args.skip_upload,
-            args.release_id,
-        )
+    LOGGER.debug(
+        "skip_upload=%s, so no snapshot / release data upload to S3, for release_id=%s",
+        args.skip_upload,
+        args.release_id,
+    )
 
     LOGGER.info("Starting SBOM augmentation")
 
@@ -293,7 +285,7 @@ async def process_component_sboms(args: ProcessComponentArgs) -> None:
             )
 
             report = await upload_sboms(
-                atlas_config, s3, list(Path(sbom_dir).iterdir())
+                atlas_config, None, list(Path(sbom_dir).iterdir())
             )
 
             artifact = get_component_artifact(report)

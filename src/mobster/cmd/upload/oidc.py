@@ -116,6 +116,7 @@ class OIDCClientCredentialsClient:  # pylint: disable=too-few-public-methods
                 timeout=Timeout(
                     DEFAULT_TIMEOUT_SECONDS, connect=DEFAULT_CONNECT_TIMEOUT_SECONDS
                 ),
+                verify=False,
             )
             return self
         except Exception as exc:

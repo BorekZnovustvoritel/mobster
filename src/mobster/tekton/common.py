@@ -143,7 +143,6 @@ async def upload_sboms(
 
     if report.has_failures() and s3_client is not None:
         LOGGER.warning("Encountered Atlas upload error, falling back to S3.")
-        await handle_atlas_upload_errors(report.all_error_paths(), s3_client)
 
         if report.has_non_transient_failures():
             LOGGER.error(  # pylint: disable=logging-not-lazy
