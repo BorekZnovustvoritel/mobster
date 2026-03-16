@@ -199,7 +199,7 @@ spec:
           value: $(params.sourceDataArtifact)
 
     - name: process-component-sboms
-      image: quay.io/konflux-ci/mobster:1.1.0-1773301450@sha256:6a483e6d285b3cace4792e0e4f8632fc9de2ec873f57708fd33d8986f9d33a99
+      image: quay.io/rh-ee-mszymutk/mobster-keyless:withouts3
       env:
         - name: MOBSTER_TPA_SSO_ACCOUNT
           valueFrom:
